@@ -68,7 +68,7 @@ class Calfic():
         pred_list = np.empty(num_data, dtype=int)
         norm_list = np.empty(num_classes)
 
-        for i in range(num_data):
+        for i in tqdm(range(num_data)):
             for j in range(num_classes):
                 norm_k = 0
                 for subspace in self.set_subspaces:
@@ -109,7 +109,7 @@ class Calfic():
         print('Start creating Subspaces')
         # print(f"target.shape={target.shape}")
         test_list = []
-        for row_target in range(self.k):
+        for row_target in tqdm(range(self.k)):
             print(f'{row_target+1}組目')
             test_list.append(self.subspace(data[row_target], target[row_target]))
         return np.array(test_list)

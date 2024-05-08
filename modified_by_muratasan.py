@@ -88,7 +88,7 @@ class Calfic():
         num_data = len(data_test)
         pred_list = self.predict(data_test)
         count = 0
-        for i in tqdm(range(num_data)):
+        for i in range(num_data):
             if pred_list[i] == int(target_test[i]):
                 count += 1
         acc = count / num_data
@@ -109,7 +109,7 @@ class Calfic():
         print('Start creating Subspaces')
         # print(f"target.shape={target.shape}")
         test_list = []
-        for row_target in tqdm(range(self.k)):
+        for row_target in range(self.k):
             print(f'{row_target+1}組目')
             test_list.append(self.subspace(data[row_target], target[row_target]))
         return np.array(test_list)
@@ -163,6 +163,9 @@ def split_train_data(X_train, y_train, k):
 
 def main():
     """main"""
+    # mnistをローカルに保存できたからコメントアウト
+    # set_mnist()                                         # 初回のみ実行(mnistをローカルに作成)
+
     times = 10  # 最大の次元数
     bunkatu = 5  # 分割数
 
@@ -192,8 +195,7 @@ def main():
             dim = i                                           # 部分空間の次元数を設定(ここを変えて精度の変化を見る)
             dimension.append(dim)
             print(f"k={k} {dim}次元")
-            # mnistをローカルに保存できたからコメントアウト
-            # set_mnist()                                         # 初回のみ実行(mnistをローカルに作成)
+
             X_train, X_test, y_train, y_test = load_mnist()     # mnistの呼び出し(比較実験時にデータを同じにするため)
             clf = Calfic(dim=dim)                               # 部分空間法の呼び出し: 空間の次元数はdimで指定
             split_Xtrain, split_ytrain = split_train_data(X_train, y_train, k)

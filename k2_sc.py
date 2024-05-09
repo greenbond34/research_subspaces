@@ -28,9 +28,9 @@ def classify_by_label(data, target):
     num_Xlabel = []
     num_ylabel = []
     for c in np.unique(target):
-    X = data[np.where(target == str(c))[0]]      # class c のデータを取得
-    # N, D = X.shape                              # データ数, データ次元数
-    y = target[np.where(target == str(c))[0]]
+        X = data[np.where(target == str(c))[0]]      # class c のデータを取得
+        # N, D = X.shape                              # データ数, データ次元数
+        y = target[np.where(target == str(c))[0]]
 
     num_Xlabel.append(X)
     num_ylabel.append(y)
@@ -79,7 +79,7 @@ class kSC():
 
 
     
-        # 部分空間法で予測
+    # 部分空間法で予測
     def predict(self, data_test) -> np.ndarray:
         """部分空間法で予測する"""
         num_data = len(data_test)

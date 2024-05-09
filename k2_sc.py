@@ -20,14 +20,17 @@ def load_mnist() -> np.ndarray:
 
 
 def classify_by_label(data, target):
-    num_label = []
+    num_Xlabel = []
+    num_ylabel = []
     for c in np.unique(target):
     X = data[np.where(target == str(c))[0]]      # class c のデータを取得
     # N, D = X.shape                              # データ数, データ次元数
+    y = target[np.where(target == str(c))[0]]
 
-    num_label.append(X)
+    num_Xlabel.append(X)
+    num_ylabel.append(y)
 
-    return num_label
+    return num_Xlabel, num_ylabel
 
 
 def main():
@@ -35,7 +38,8 @@ def main():
     # mnistの呼び出し(比較実験時にデータを同じにするため)
     X_train, X_test, y_train, y_test = load_mnist()
 
-    num_label = classify_by_label(X_train, y_train)
+    # 学習サンプルを0~9のラベル毎に分けて，分けたものをまとめたものの配列を返す
+    num_Xlabel, num_ylabel = classify_by_label(X_train, y_train)
 
     # 処理時間の計算
     elapsed_time = int(time.time() - start_time)

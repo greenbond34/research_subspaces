@@ -1,4 +1,7 @@
-"""mnistをローカルに保存"""
+"""mnistをローカルに保存
+gitのブランチで実行しようとすると，
+mnistの情報量が多すぎて
+プッシュできなくなる"""
 import ssl
 import numpy as np
 from sklearn.datasets import fetch_openml

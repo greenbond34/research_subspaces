@@ -49,6 +49,31 @@ class kSC():
         set_Xcluster, set_ycluster = self.devide_into_k_pieces(X_train, y_train)
         # k組の部分空間を作成
         self.set_subspaces = self.k_subspaces(set_Xcluster, set_ycluster)
+
+    def like_kmeans(self, X_train):
+        """ｋ個の各部分空間に含まれているサンプルで，それぞれの部分空間を作る．
+        それを繰り返す
+        引数：一つのラベル分の学習サンプル
+        """
+        pred_list = self.predict(X_train)
+
+        # pred_list内のインデックスをクラス毎にまとめたい
+        k_indexes = []
+        for labels in np.unique(pred_list):
+            index = np.where(labels == pred_list)
+            k_indexes.append(index)
+
+        # X_trainの特徴ベクトルをクラス毎にまとめたい
+        cluster_labels = []
+        cluster_X = []
+        for i in range(len(k_indexes)):
+            for j in k_indexes[i]:
+                cluster_labels.append(X_train[j])
+            cluster_X.append(cluster_labels)
+
+        
+
+
     
         # 部分空間法で予測
     def predict(self, data_test) -> np.ndarray:
@@ -143,11 +168,12 @@ def main():
     X_train, X_test, y_train, y_test = load_mnist()
 
     k_sc = kSC(dim=dim)
-    # 学習サンプルを0~9のラベル毎に分けて，分けたものをまとめたものの配列を返す
+    # 学習サンプルを0~9のラベル毎に分けて，分けたものをまとめて配列で返す
     num_Xlabel, num_ylabel = classify_by_label(X_train, y_train)
     
     for i in range(10):
         k_sc.fit(num_Xlabel[i], num_ylabel[i], k)
+        k_sc.like_kmeans(num_Xlabel[i])
 
     # 処理時間の計算
     elapsed_time = int(time.time() - start_time)

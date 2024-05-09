@@ -113,10 +113,8 @@ class kSC():
                     if norm > norm_k:
                         norm_k = norm
                 norm_list[j] = norm_k
-            print(f"norm_list={norm_list}")
             # 距離が最も近いクラスを予測クラスとする
             pred_list[i] = np.argmax(norm_list)
-        print(f"pred_list={pred_list}")
         print('Prediction Completed')
         return pred_list
 
@@ -140,10 +138,8 @@ class kSC():
                         if norm > norm_k:
                             norm_k = norm
                 norm_list[j] = norm_k
-            print(f"norm_list={norm_list}")
             # 距離が最も近いクラスを予測クラスとする
             pred_list[i] = np.argmax(norm_list)
-        print(f"pred_list={pred_list}")
         print('Prediction Completed')
         return pred_list
 
@@ -187,7 +183,7 @@ class kSC():
         print('Start creating Subspaces')
         # print(f"target.shape={target.shape}")
         test_list = []
-        for row_target in tqdm(range(self.k)):
+        for row_target in range(self.k):
             print(f'{row_target+1}組目')
             test_list.append(self.subspace(data[row_target], target[row_target]))
         return np.array(test_list)
@@ -198,8 +194,10 @@ class kSC():
         lambdas = []
         class_eigenvectors = []
         print('Start creating Subspaces')
+        print(f"type(target)={type(target)}")
         for c in tqdm(np.unique(target)):
-            X = data[np.where(target == str(c))[0]]      # class c のデータを取得
+            print(f"type(c)={type(c)}")
+            X = data[np.where(target == c)[0]]      # class c のデータを取得
             N, D = X.shape                              # データ数, データ次元数
             for i in range(D):
                 if len(np.unique(X[:, i])) == 1:

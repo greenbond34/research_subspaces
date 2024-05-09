@@ -55,30 +55,37 @@ class kSC():
         それを繰り返す
         引数：一つのラベル分の学習サンプル
         """
-        pred_list = self.predict(X_train)
+        self.X_train = X_train
+        self.y_train = y_train
+        # 一つのラベル分の学習サンプルを写像し，予測結果を受け取る
+        pred_list = self.predict(self.X_train)
+        cluster_X, cluster_y = self.Separate_contents(pred_list)
 
-        # pred_list内のインデックスをクラス毎にまとめたい
+    def Separate_contents(self, pred_list):
+        """X_train,y_trainの中身を所属のクラス毎に分ける"""
+        # pred_list内のインデックスをクラス毎にまとめる
         k_indexes = []
         for labels in np.unique(pred_list):
             index = np.where(labels == pred_list)
             k_indexes.append(index)
-
-        # X_train,y_trainの特徴ベクトルをクラス毎にまとめたい
-        cluster_Xlabels = []
-        cluster_ylabels = []
+        # X_train,y_trainの特徴ベクトルをクラス毎にまとめる
         cluster_X = []
         cluster_y = []
         for i in range(len(k_indexes)):
+            cluster_Xlabels = []
+            cluster_ylabels = []
             for j in k_indexes[i]:
-                cluster_Xlabels.append(X_train[j])
-                cluster_ylabels.append(y_train[j])
+                cluster_Xlabels.append(self.X_train[j])
+                cluster_ylabels.append(self.y_train[j])
             cluster_X.append(cluster_Xlabels)
             cluster_y.append(cluster_ylabels)
+        return cluster_X, cluster_y
 
-        
+        # # k個の部分空間を作成
+        # self.set_subspaces = self.k_subspaces(cluster_X, cluster_y)
+        # # 一つのラベル分の学習サンプルを写像し，予測結果を受け取る
+        # pred_list = self.predict(self.X_train)
 
-
-    
     # 部分空間法で予測
     def predict(self, data_test) -> np.ndarray:
         """部分空間法で予測する"""
@@ -104,7 +111,7 @@ class kSC():
         print(f"pred_list={pred_list}")
         print('Prediction Completed')
         return pred_list
-        
+
     def devide_into_k_pieces(self, X_train, y_train):
         """各ラベルの学習サンプルをk個に分割する"""
         np.random.seed(10)
@@ -136,7 +143,7 @@ class kSC():
             print(f'{row_target+1}組目')
             test_list.append(self.subspace(data[row_target], target[row_target]))
         return np.array(test_list)
-    
+
     # 部分空間を作成(次元数はdimで指定)
     def subspace(self, data, target) -> np.ndarray:
         """部分空間を作成(次元数はdimで指定)"""
@@ -174,10 +181,10 @@ def main():
     k_sc = kSC(dim=dim)
     # 学習サンプルを0~9のラベル毎に分けて，分けたものをまとめて配列で返す
     num_Xlabel, num_ylabel = classify_by_label(X_train, y_train)
-    
+
     for i in range(10):
         k_sc.fit(num_Xlabel[i], num_ylabel[i], k)
-        k_sc.like_kmeans(num_Xlabel[i])
+        k_sc.like_kmeans(num_Xlabel[i], num_ylabel[i])
 
     # 処理時間の計算
     elapsed_time = int(time.time() - start_time)
@@ -188,3 +195,7 @@ def main():
     print(f"elapsed time : {str(elapsed_hours).zfill(2) + ":"
                             + str(elapsed_minutes).zfill(2) + ":"
                             + str(elapsed_seconds).zfill(2)}")
+
+
+if __name__ == '__main__':
+    main()

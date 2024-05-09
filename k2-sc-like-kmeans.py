@@ -1,33 +1,13 @@
 """plot {Recognition_rate * dimension} (subspace classifier)
 elapsed time : 01:23:04"""
 import time
-import ssl
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
-from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 
 
 start_time = time.time()
-ssl._create_default_https_context = ssl._create_unverified_context
-
-
-# mnistをローカルに保存
-def set_mnist():
-    """mnistをローカルに保存"""
-    data, target = fetch_openml('mnist_784', version=1, return_X_y=True)
-    data = np.array(data)
-    label = np.array(target)
-    X_train, X_test, y_train, y_test = train_test_split(data, target,
-                                                        test_size=0.16,
-                                                        random_state=0)
-    y_train = np.array(y_train)
-    y_test = np.array(y_test)
-    np.savez('train.npz', X_train, y_train)
-    np.savez('test.npz', X_test, y_test)
-
-    print(data.size)
 
 
 # ローカルに保存したmnistを呼び出し
@@ -163,11 +143,8 @@ def split_train_data(X_train, y_train, k):
 
 def main():
     """main"""
-    # mnistをローカルに保存できたからコメントアウト
-    # set_mnist()                                         # 初回のみ実行(mnistをローカルに作成)
-
     times = 10  # 最大の次元数
-    bunkatu = 5  # 分割数
+    bunkatu = 2  # 分割数
 
     times = times + 1
     bunkatu = bunkatu + 1
@@ -180,32 +157,32 @@ def main():
     max_dim = []
     k_array = []
 
-    for num_sets in range(1, bunkatu):
-        # 学習サンプルをkに分割
-        k = num_sets
-        k_array.append(k)
-        # k個の学習サンプルを入れる箱
-        split_Xtrain = []
-        split_ytrain = []
-        # 認識率と次元の数値を次元ごとに保存する
-        rec_rate = []
-        dimension = []
+    num_sets = bunkatu
+    # 学習サンプルをkに分割
+    k = num_sets
+    k_array.append(k)
+    # k個の学習サンプルを入れる箱
+    split_Xtrain = []
+    split_ytrain = []
+    # 認識率と次元の数値を次元ごとに保存する
+    rec_rate = []
+    dimension = []
 
-        for i in range(1, times):
-            dim = i                                           # 部分空間の次元数を設定(ここを変えて精度の変化を見る)
-            dimension.append(dim)
-            print(f"k={k} {dim}次元")
+    for i in range(1, times):
+        dim = i                                           # 部分空間の次元数を設定(ここを変えて精度の変化を見る)
+        dimension.append(dim)
+        print(f"k={k} {dim}次元")
 
-            X_train, X_test, y_train, y_test = load_mnist()     # mnistの呼び出し(比較実験時にデータを同じにするため)
-            clf = Calfic(dim=dim)                               # 部分空間法の呼び出し: 空間の次元数はdimで指定
-            split_Xtrain, split_ytrain = split_train_data(X_train, y_train, k)
+        X_train, X_test, y_train, y_test = load_mnist()     # mnistの呼び出し(比較実験時にデータを同じにするため)
+        clf = Calfic(dim=dim)                               # 部分空間法の呼び出し: 空間の次元数はdimで指定
+        split_Xtrain, split_ytrain = split_train_data(X_train, y_train, k)
 
-            clf.fit(split_Xtrain, split_ytrain, k)  # 部分空間法の学習
+        clf.fit(split_Xtrain, split_ytrain, k)  # 部分空間法の学習
 
-            # pred = clf.predict(X_test)                        # 部分空間法でテストデータを予測(予測データ取り出したい時用)
-            acc = clf.accuracy(X_test, y_test)                  # 部分空間法の識別率を計算
-            rec_rate.append(acc*100)
-            print('accuracy:', acc)
+        # pred = clf.predict(X_test)                        # 部分空間法でテストデータを予測(予測データ取り出したい時用)
+        acc = clf.accuracy(X_test, y_test)                  # 部分空間法の識別率を計算
+        rec_rate.append(acc*100)
+        print('accuracy:', acc)
 
         store_rec_rate.append(rec_rate)
         store_dimension.append(dimension)

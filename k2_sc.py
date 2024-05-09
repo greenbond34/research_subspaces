@@ -57,11 +57,19 @@ class kSC():
         """
         self.X_train = X_train
         self.y_train = y_train
-        # 一つのラベル分の学習サンプルを写像し，予測結果を受け取る
-        pred_list = self.predict(self.X_train)
-        cluster_X, cluster_y = self.Separate_contents(pred_list)
 
-    def Separate_contents(self, pred_list):
+        # 繰り返しは，収束条件をつけたループ文にする
+        for _ in range(5):
+            # 一つのラベル分の学習サンプルを写像し，予測結果を受け取る
+            pred_list = self.predict(self.X_train)
+            # X_train,y_trainの中身を所属のクラス毎に分ける
+            cluster_X, cluster_y = self.separate_contents(pred_list)
+            # ｋ個の各部分空間に含まれているサンプルで，それぞれの部分空間を作る
+            self.set_subspaces = self.k_subspaces(cluster_X, cluster_y)
+
+        return self.set_subspaces
+
+    def separate_contents(self, pred_list):
         """X_train,y_trainの中身を所属のクラス毎に分ける"""
         # pred_list内のインデックスをクラス毎にまとめる
         k_indexes = []
@@ -112,6 +120,33 @@ class kSC():
         print('Prediction Completed')
         return pred_list
 
+    # 部分空間法で予測（最終評価用）
+    def predict_for_acc(self, data_test, all_subspaces) -> np.ndarray:
+        """部分空間法で予測する"""
+        num_data = len(data_test)
+        num_classes = len(self.set_subspaces[0])*len(all_subspaces)
+        print('Start Prediction')
+
+        pred_list = np.empty(num_data, dtype=int)
+        norm_list = np.empty(num_classes)
+
+        for i in tqdm(range(num_data)):
+            for j in range(num_classes):
+                norm_k = 0
+                for index in range(len(all_subspaces)):
+                    for subspace in all_subspaces[index]:
+                        # 各クラスの空間との距離を計算（ユークリッド）
+                        norm = sum(np.dot(data_test[i, :], subspace[j, :, k]) ** 2 for k in range(self.dim))
+                        if norm > norm_k:
+                            norm_k = norm
+                norm_list[j] = norm_k
+            print(f"norm_list={norm_list}")
+            # 距離が最も近いクラスを予測クラスとする
+            pred_list[i] = np.argmax(norm_list)
+        print(f"pred_list={pred_list}")
+        print('Prediction Completed')
+        return pred_list
+
     def devide_into_k_pieces(self, X_train, y_train):
         """各ラベルの学習サンプルをk個に分割する"""
         np.random.seed(10)
@@ -124,6 +159,19 @@ class kSC():
         train_array_splits = [X_train[idx] for idx in split_ind]
         target_array_splits = [y_train[idx] for idx in split_ind]
         return train_array_splits, target_array_splits
+
+        # 部分空間法の精度を算出
+    def accuracy(self, data, target, all_subspaces) -> float:
+        """精度の算出"""
+        num_data = len(data)
+        pred_list = self.predict_for_acc(data, all_subspaces)
+        count = 0
+        for i in tqdm(range(num_data)):
+            if pred_list[i] == int(target[i]):
+                count += 1
+        acc = count / num_data
+        print('accuracy is: ', acc)
+        return acc
 
     def k_subspaces(self, data, target) -> np.ndarray:
         """k組の部分空間を作成
@@ -175,6 +223,7 @@ def main():
     """main"""
     dim = 40
     k = 3
+    all_subspaces = []
     # mnistの呼び出し(比較実験時にデータを同じにするため)
     X_train, X_test, y_train, y_test = load_mnist()
 
@@ -184,7 +233,11 @@ def main():
 
     for i in range(10):
         k_sc.fit(num_Xlabel[i], num_ylabel[i], k)
-        k_sc.like_kmeans(num_Xlabel[i], num_ylabel[i])
+        set_subspaces = k_sc.like_kmeans(num_Xlabel[i], num_ylabel[i])
+        all_subspaces.append(set_subspaces)
+
+    acc = k_sc.accuracy(X_test, y_test, all_subspaces)                  # 部分空間法の識別率を計算
+    print('accuracy:', acc)
 
     # 処理時間の計算
     elapsed_time = int(time.time() - start_time)

@@ -50,7 +50,7 @@ class kSC():
         # k組の部分空間を作成
         self.set_subspaces = self.k_subspaces(set_Xcluster, set_ycluster)
 
-    def like_kmeans(self, X_train):
+    def like_kmeans(self, X_train, y_train):
         """ｋ個の各部分空間に含まれているサンプルで，それぞれの部分空間を作る．
         それを繰り返す
         引数：一つのラベル分の学習サンプル
@@ -63,13 +63,17 @@ class kSC():
             index = np.where(labels == pred_list)
             k_indexes.append(index)
 
-        # X_trainの特徴ベクトルをクラス毎にまとめたい
-        cluster_labels = []
+        # X_train,y_trainの特徴ベクトルをクラス毎にまとめたい
+        cluster_Xlabels = []
+        cluster_ylabels = []
         cluster_X = []
+        cluster_y = []
         for i in range(len(k_indexes)):
             for j in k_indexes[i]:
-                cluster_labels.append(X_train[j])
-            cluster_X.append(cluster_labels)
+                cluster_Xlabels.append(X_train[j])
+                cluster_ylabels.append(y_train[j])
+            cluster_X.append(cluster_Xlabels)
+            cluster_y.append(cluster_ylabels)
 
         
 

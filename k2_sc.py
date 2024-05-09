@@ -87,6 +87,9 @@ class kSC():
                 cluster_ylabels.append(self.y_train[j])
             cluster_X.append(cluster_Xlabels)
             cluster_y.append(cluster_ylabels)
+
+        cluster_X = np.array(cluster_X)
+        cluster_y = np.array(cluster_y)
         return cluster_X, cluster_y
 
         # # k個の部分空間を作成

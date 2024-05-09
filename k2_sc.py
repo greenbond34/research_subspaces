@@ -20,6 +20,11 @@ def load_mnist() -> np.ndarray:
 
 
 def classify_by_label(data, target):
+    """
+    学習サンプルを0~9のラベル毎に分割,分割したものを配列にまとめて返す
+    data : X_train（mainのところで)
+    target : y_train（mainのところで)
+    """
     num_Xlabel = []
     num_ylabel = []
     for c in np.unique(target):
@@ -33,10 +38,19 @@ def classify_by_label(data, target):
     return num_Xlabel, num_ylabel
 
 
+    class kSC():
+        """k-部分空間法"""
+        def __init__(self, dim=784) -> None:
+            self.dim = dim
+
+
 def main():
     """main"""
+    dim = 40
     # mnistの呼び出し(比較実験時にデータを同じにするため)
     X_train, X_test, y_train, y_test = load_mnist()
+
+    k_sc = kSC(dim=dim)
 
     # 学習サンプルを0~9のラベル毎に分けて，分けたものをまとめたものの配列を返す
     num_Xlabel, num_ylabel = classify_by_label(X_train, y_train)

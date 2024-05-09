@@ -1,33 +1,13 @@
 """plot {Recognition_rate * dimension} (subspace classifier)
 elapsed time : 01:23:04"""
 import time
-import ssl
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
-from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 
 
 start_time = time.time()
-ssl._create_default_https_context = ssl._create_unverified_context
-
-
-# mnistをローカルに保存
-def set_mnist():
-    """mnistをローカルに保存"""
-    data, target = fetch_openml('mnist_784', version=1, return_X_y=True)
-    data = np.array(data)
-    label = np.array(target)
-    X_train, X_test, y_train, y_test = train_test_split(data, target,
-                                                        test_size=0.16,
-                                                        random_state=0)
-    y_train = np.array(y_train)
-    y_test = np.array(y_test)
-    np.savez('train.npz', X_train, y_train)
-    np.savez('test.npz', X_test, y_test)
-
-    print(data.size)
 
 
 # ローカルに保存したmnistを呼び出し
@@ -163,9 +143,6 @@ def split_train_data(X_train, y_train, k):
 
 def main():
     """main"""
-    # mnistをローカルに保存できたからコメントアウト
-    # set_mnist()                                         # 初回のみ実行(mnistをローカルに作成)
-
     times = 10  # 最大の次元数
     bunkatu = 2  # 分割数
 

@@ -28,11 +28,11 @@ def classify_by_label(data, target):
     num_Xlabel = []
     num_ylabel = []
     for c in np.unique(target):
-        X = data[np.where(target == str(c))[0]]      # class c のデータを取得
+        x = data[np.where(target == str(c))[0]]      # class c のデータを取得
         # N, D = X.shape                              # データ数, データ次元数
         y = target[np.where(target == str(c))[0]]
 
-    num_Xlabel.append(X)
+    num_Xlabel.append(x)
     num_ylabel.append(y)
 
     return num_Xlabel, num_ylabel

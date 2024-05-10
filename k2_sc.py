@@ -52,22 +52,47 @@ class kSC():
 
     def like_kmeans(self, X_train, y_train):
         """ｋ個の各部分空間に含まれているサンプルで，それぞれの部分空間を作る．
+        学習サンプルを写像
         それを繰り返す
         引数：一つのラベル分の学習サンプル
         """
         self.X_train = X_train
         self.y_train = y_train
 
+        # 一つのラベル分の学習サンプルを写像し，予測結果を受け取る
+        pred_list = self.predict(self.X_train)
+
         # 繰り返しは，収束条件をつけたループ文にする
         for _ in range(5):
-            # 一つのラベル分の学習サンプルを写像し，予測結果を受け取る
-            pred_list = self.predict(self.X_train)
             # X_train,y_trainの中身を所属のクラス毎に分ける
             cluster_X, cluster_y = self.separate_contents(pred_list)
             # ｋ個の各部分空間に含まれているサンプルで，それぞれの部分空間を作る
             self.set_subspaces = self.k_subspaces(cluster_X, cluster_y)
+            # 一つのラベル分の学習サンプルを写像し，予測結果を受け取る
+            pred_list = self.predict(self.X_train)
 
         return self.set_subspaces
+
+    def convergence_condi(self, n_train, n_1_train):
+        """
+        収束条件
+        n回目のαクラスに所属している学習サンプル(n_train)が
+        n-1回目のαクラスに所属していた学習サンプル(n_1_train)の
+        x%同じなら収束したとみなす"""
+        x = 100  # 何%にするか，重ならないから100%
+        count_true = 0
+        for _ in range(self.k):
+            true_rate = 0
+            exit_true = 0
+            for i in enumerate(n_train):
+                if n_train[i] in n_1_train:
+                    exit_true += 1
+            true_rate = (count_true / len(n_train)) * 100
+            if true_rate >= x:
+                count_true += 1
+        if count_true == self.k:
+            return False
+        return True
 
     def separate_contents(self, pred_list):
         """X_train,y_trainの中身を所属のクラス毎に分ける"""

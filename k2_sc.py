@@ -70,6 +70,8 @@ class kSC():
             self.set_subspaces = self.k_subspaces(cluster_X, cluster_y)
             # 一つのラベル分の学習サンプルを写像し，予測結果を受け取る
             pred_list = self.predict(self.X_train)
+            # X_train,y_trainの中身を所属のクラス毎に分ける
+            cluster_X, cluster_y = self.separate_contents(pred_list)
 
         return self.set_subspaces
 

@@ -1,4 +1,3 @@
-"""k-subspace classifier"""
 import time
 import ssl
 import matplotlib.pyplot as plt
@@ -226,11 +225,12 @@ def main():
     for k_num in range(len(store_rec_rate)):
         plt.plot(store_dimension[k_num], store_rec_rate[k_num],
                  linestyle=line_formats[k_num], label=f'k={k_array[k_num]}')
-    plt.ylim(90,)
-    plt.title('k-SC_1')
+    plt.xlim(10,)
+    plt.ylim(90, 97)
+    plt.title('')
     plt.xlabel('dim')
     plt.ylabel('rec_rate(%)')
-    plt.legend()
+    plt.legend(loc='lower right')
     plt.grid(True)  # グリッド線を表示する
     plt.savefig('k-SC__upto60dim_min90%')
 
@@ -241,10 +241,10 @@ def main():
         plt.plot(store_dimension[k_num], store_rec_rate[k_num],
                  linestyle=line_formats[k_num], label=f'k={k_array[k_num]}')
 
-    plt.title('k-SC_2')
+    plt.title('')
     plt.xlabel('dim')
     plt.ylabel('rec_rate(%)')
-    plt.legend()
+    plt.legend(loc='lower right')
     plt.grid(True)  # グリッド線を表示する
     plt.savefig('k-SC__upto60dim')
 

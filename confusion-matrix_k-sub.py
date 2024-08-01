@@ -15,8 +15,8 @@ from sklearn.cluster import KMeans
 # 自作モジュール
 from modules.mnist import load_mnist
 
-# 並列処理を使うか選択
-MULTIPROCESS = True
+# 並列処理を使うか選択,False→並列処理しない、Truez→並列処理
+MULTIPROCESS = False
 
 ssl._create_default_https_context = ssl._create_unverified_context
 

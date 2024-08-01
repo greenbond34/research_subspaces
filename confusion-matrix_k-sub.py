@@ -185,8 +185,7 @@ def main():
     data = np.array(data)
     target = np.array(target)
 
-    max_k = 5
-    max_dim = 60
+    dim = 60
     threshold = 0.90
 
     # plotのために学習サンプルをk組に分けた時のrec_rateとdimensionを保管する
@@ -194,64 +193,28 @@ def main():
     store_dimension = []
     k_array = []
 
-    for k in range(1, max_k+1):
+    for k in [1, 5]:
         k_array.append(k)
         # 認識率と次元の数値を次元ごとに保存する
         rec_rate = []
         dimension = []
 
-        for dim in range(1, max_dim+1):
-            dimension.append(dim)
-            print(f"k={k} {dim}次元")
+        dimension.append(dim)
+        print(f"k={k} {dim}次元")
 
-            for divi in range(5):
-                store_pred = []
+        X_train, X_test, y_train, y_test = load_mnist()
+        X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.16, random_state=divi)
+        all_class_subspaces = make_allclass_subspaces(X_train, y_train, k, dim, threshold)
+        acc = accuracy(X_test, y_test, all_class_subspaces, dim)
 
-                X_train, X_test, y_train, y_test = load_mnist()
-                X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.16, random_state=divi)
-                all_class_subspaces = make_allclass_subspaces(X_train, y_train, k, dim, threshold)
-                acc = accuracy(X_test, y_test, all_class_subspaces, dim)
-                store_pred.append(acc)
-
-            pred_mean = np.mean(store_pred)  # predの平均
-
-            rec_rate.append(pred_mean*100)
-            print('accuracy:', pred_mean)
+        rec_rate.append(acc*100)
+        print('accuracy:', acc)
 
         store_rec_rate.append(rec_rate)
         store_dimension.append(dimension)
 
     print(f"store_rec_rate={store_rec_rate}")
     print(f"store_dimension={store_dimension}")
-
-    # 認識率と次元数のグラフ
-    # 10種類の曲線スタイル
-    line_formats = ['-', '--', ':', '-.', (0, (3, 1, 1, 1)), 'dashed', 'dotted', 'dashdot', '-.', '--']
-    for k_num in range(len(store_rec_rate)):
-        plt.plot(store_dimension[k_num], store_rec_rate[k_num],
-                 linestyle=line_formats[k_num], label=f'k={k_array[k_num]}')
-    plt.xlim(10,)
-    plt.ylim(90, 97)
-    plt.title('')
-    plt.xlabel('dim')
-    plt.ylabel('rec_rate(%)')
-    plt.legend(loc='lower right')
-    plt.grid(True)  # グリッド線を表示する
-    plt.savefig('k-SC__upto60dim_min90%')
-
-    # 認識率と次元数のグラフ
-    # 10種類の曲線スタイル
-    line_formats = ['-', '--', ':', '-.', 'solid', 'dashed', 'dotted', 'dashdot', '-.', '--']
-    for k_num in range(len(store_rec_rate)):
-        plt.plot(store_dimension[k_num], store_rec_rate[k_num],
-                 linestyle=line_formats[k_num], label=f'k={k_array[k_num]}')
-
-    plt.title('')
-    plt.xlabel('dim')
-    plt.ylabel('rec_rate(%)')
-    plt.legend(loc='lower right')
-    plt.grid(True)  # グリッド線を表示する
-    plt.savefig('k-SC__upto60dim')
 
 
 if __name__ == '__main__':

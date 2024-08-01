@@ -3,17 +3,24 @@ create confusion matrix
 k=1, 5, dim=60
 
 """
-import time
 import ssl
-import matplotlib.pyplot as plt
+import time
+
 import numpy as np
+import matplotlib.pyplot as plt
 from tqdm import tqdm
+
+import ray
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
-import ray
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.cluster import KMeans
+
 # 自作モジュール
 from modules.mnist import load_mnist
+
 
 # 並列処理を使うか選択,False→並列処理しない、Truez→並列処理
 MULTIPROCESS = False
@@ -185,36 +192,17 @@ def main():
     data = np.array(data)
     target = np.array(target)
 
+    k = 1
     dim = 60
     threshold = 0.90
 
-    # plotのために学習サンプルをk組に分けた時のrec_rateとdimensionを保管する
-    store_rec_rate = []
-    store_dimension = []
-    k_array = []
+    print(f"k={k} {dim}次元")
 
-    for k in [1, 5]:
-        k_array.append(k)
-        # 認識率と次元の数値を次元ごとに保存する
-        rec_rate = []
-        dimension = []
-
-        dimension.append(dim)
-        print(f"k={k} {dim}次元")
-
-        X_train, X_test, y_train, y_test = load_mnist()
-        X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.16, random_state=divi)
-        all_class_subspaces = make_allclass_subspaces(X_train, y_train, k, dim, threshold)
-        acc = accuracy(X_test, y_test, all_class_subspaces, dim)
-
-        rec_rate.append(acc*100)
-        print('accuracy:', acc)
-
-        store_rec_rate.append(rec_rate)
-        store_dimension.append(dimension)
-
-    print(f"store_rec_rate={store_rec_rate}")
-    print(f"store_dimension={store_dimension}")
+    X_train, X_test, y_train, y_test = load_mnist()
+    X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.16)
+    all_class_subspaces = make_allclass_subspaces(X_train, y_train, k, dim, threshold)
+    acc = accuracy(X_test, y_test, all_class_subspaces, dim)
+    print('accuracy:', acc)
 
 
 if __name__ == '__main__':
